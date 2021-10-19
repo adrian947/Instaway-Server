@@ -19,6 +19,7 @@ const server = () => {
         } catch (error) {
           console.log("####Error####");
           console.log(error);
+          return false
           throw new Error("Token invalid");
         }
       }

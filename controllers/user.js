@@ -90,23 +90,83 @@ const updateAvatar = async (file, context) => {
   return file;
 };
 
-const deleteAvatar = async (context)=>{
- 
- 
-  const {id} = context.user
-  
+const deleteAvatar = async (context) => {
+  const { id } = context.user;
+
   try {
-    await User.findByIdAndUpdate(id, {avatar: ""})
+    await User.findByIdAndUpdate(id, { avatar: "" });
     return true;
   } catch (error) {
-    console.log('error', error )
+    console.log("error", error);
     return false;
   }
-  
-  
-  
-}
+};
 
+const updateUser = async (input, context) => {
+  const { id } = context.user;
 
+  try {
+    if (input.currentPassword & input.newPassword) {
+      const userFound = await User.findById(id);
+      const validation = bcrypt.compareSync(
+        input.currentPassword,
+        userFound.password
+      );
+      if (!validation) throw new Error("Incorrect password");
 
-module.exports = { register, login, getUser, updateAvatar, deleteAvatar };
+      const salt = bcrypt.genSaltSync(10);
+      const newHash = bcrypt.hashSync(input.newPassword, salt);
+      await User.findByIdAndUpdate(id, { password: newHash });
+    } else {
+      await User.findByIdAndUpdate(id, input);
+    }
+    return true;
+  } catch (error) {
+    console.log("error", error);
+    return false;
+  }
+};
+
+const searchUser = async (search) => {
+  //return Users width name incomplete
+
+  const users = await User.find({
+    name: {
+      $regex: search,
+      $options: "i",
+    },
+  });
+
+  return users;
+};
+
+const verifyToken = async (input) => {
+  const { token } = input;
+  const verify = jwt.verify(
+    token,
+    process.env.SECRETA,
+    function (err, decodedToken) {
+      // console.log("err", err);
+      // console.log("decode", decodedToken);
+
+      if (decodedToken) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  );
+
+  return verify;
+};
+
+module.exports = {
+  register,
+  login,
+  getUser,
+  updateAvatar,
+  deleteAvatar,
+  updateUser,
+  searchUser,
+  verifyToken,
+};
