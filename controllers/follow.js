@@ -3,7 +3,6 @@ const User = require("../models/userModel");
 
 const followController = async (userName, context) => {
   const followUserName = userName.userName;
-  
 
   const userFound = await User.findOne({ userName: followUserName });
   if (!userFound) throw new Error("User not find");
@@ -81,10 +80,30 @@ const getAllFollowing = async (userName) => {
   return FollowersList;
 };
 
+const getNotFollowers = async (context) => {
+  const users = await User.find().limit(50);
+
+  const arrayUser = [];
+
+  for await (const data of users) {
+    const isFind = await Follow.findOne({ idUser: context.user.id })
+      .where("follow")
+      .equals(data._id);
+
+    if (!isFind) {
+      if (data._id.toString() !== context.user.id.toString()) {
+        arrayUser.push(data);
+      }
+    }
+  }
+  return arrayUser;
+};
+
 module.exports = {
   followController,
   isFollow,
   unFollowController,
   getAllFollow,
   getAllFollowing,
+  getNotFollowers,
 };

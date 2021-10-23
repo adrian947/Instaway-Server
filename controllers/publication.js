@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const Publication = require("../models/publicationModel");
+const Follow = require("../models/followModel");
 
 const publish = (file, context) => {
   const user = User.findOne({ userName: context.user.userName });
@@ -39,7 +40,37 @@ const getPublications = async (userName) => {
   return publications;
 };
 
+const getPublicationsFolloweds = async (context) => {
+  const followers = await Follow.find({ idUser: context.user.id }).populate(
+    "follow"
+  );
+
+  const FollowersList = [];
+
+  for await (const data of followers) {
+    FollowersList.push(data.follow);
+  }
+
+  const publicationList = [];
+
+  for await (const data of FollowersList) {
+    const publicationsUser = await Publication.find()
+      .where({ idUser: data._id })
+      .sort({ createAt: -1 })
+      .populate("idUser")
+      .limit(5);
+    publicationList.push(...publicationsUser);
+  }
+
+  const result = publicationList.sort((a, b) => {
+    return new Date(b.createAt) - new Date(a.createAt);
+  });
+
+  return result;
+};
+
 module.exports = {
   publish,
   getPublications,
+  getPublicationsFolloweds,
 };

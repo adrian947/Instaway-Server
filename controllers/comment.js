@@ -3,8 +3,6 @@ const Publication = require("../models/publicationModel");
 const Comment = require("../models/commentModel");
 
 const addComment = (input, context) => {
-  console.log("context", context);
-
   try {
     const comment = new Comment({
       idPublication: input.idPublication,
@@ -24,7 +22,7 @@ const addComment = (input, context) => {
 const getComment = async (idPublication) => {
   try {
     const comments = await Comment.find({ idPublication }).populate("idUser");
-    console.log('c',comments )
+
     return comments;
   } catch (error) {
     console.log("error", error);

@@ -40,6 +40,13 @@ const typeDefs = gql`
     comment: String
     createAt: String
   }
+  type feedPublication {
+    id: ID
+    idUser: User
+    file: String
+    typeFile: String
+    createAt: String
+  }
 
   #Inputs
   input UserInput {
@@ -79,14 +86,25 @@ const typeDefs = gql`
     isFollow(userName: String!): Boolean
     getAllFollow(userName: String!): [User]
     getAllFollowing(userName: String!): [User]
+    getNotFollowers: [User]
 
     #publication
 
     getPublications(userName: String!): [Publication]
+    getPublicationsFolloweds: [feedPublication]
 
     #comment
 
     getComment(idPublication: ID!): [Comment]
+
+    #likes
+
+    isLike(idPublication: ID!): Boolean
+    countLike(idPublication: ID!): Int
+
+    
+
+
 
   }
   type Mutation {
@@ -109,6 +127,11 @@ const typeDefs = gql`
     #comment
 
     addComment(input: CommentInput): Comment
+
+    #Likes
+
+    addLike(idPublication: ID!): Boolean
+    deleteLike(idPublication: ID!): Boolean
     
   }
 `;
