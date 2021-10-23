@@ -79,15 +79,16 @@ const updateAvatar = async (file, context) => {
   const { id } = context.user;
 
   try {
-    await User.findByIdAndUpdate(id, { avatar: file.urlAvatar });
+    await User.findByIdAndUpdate(id, {
+      avatar: file.urlAvatar.secure_url,
+    });
+    return file;
   } catch (error) {
     console.log("error", error);
   }
 
-  console.log("fileserver", file);
-  console.log("context", context);
-
-  return file;
+  // console.log("fileserver", file);
+  // console.log("context", context);
 };
 
 const deleteAvatar = async (context) => {
