@@ -80,7 +80,7 @@ const updateAvatar = async (file, context) => {
 
   try {
     await User.findByIdAndUpdate(id, {
-      avatar: file.urlAvatar.secure_url,
+      avatar: file.urlAvatar,
     });
     return file;
   } catch (error) {
