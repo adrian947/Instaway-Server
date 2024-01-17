@@ -8,7 +8,9 @@ const server = () => {
     resolvers,
   });
 
-  serverApollo.listen().then(({ url }) => {
+  const port = process.env.PORT || 4000
+
+  serverApollo.listen(port).then(({ url }) => {
     console.log(`Server Apollo connected at ${url}`);
   });
 };
